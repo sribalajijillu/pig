@@ -1,0 +1,12 @@
+txn  =  LOAD  '/home/hduser/Pig/txns1.txt'  USING PigStorage(',')  AS  ( txnid, date, custid, amount:double, category, product, city, state, type);
+cust = load '/home/hduser/Pig/custs' using PigStorage(',') as (cus_id, fname, lname, age, profession:chararray);
+txnbycust = group txn by custid;
+spendbycust = foreach  txnbycust  generate group as customer_id,  ROUND_TO(SUM(txn.amount ),2) as totalsales;
+--dump spendbycust;
+custorder = order spendbycust by $1 desc;
+top10cust = limit custorder  10;
+top10join = join top10cust by $0, cust by $0;
+--dump top10join;
+top10 = foreach top10join generate $0, $3, $4, $5, $6, $1;
+top10order = order top10 by $5 desc;
+dump top10order;

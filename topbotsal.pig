@@ -1,0 +1,27 @@
+d2000  =  LOAD  '/home/hduser/Downloads/2000.txt'  USING PigStorage(',')  AS  ( catid, name, jan:double, feb:double, mar:double, apr:double, may:double, jun:double, jul:double, aug:double, sep:double, oct:double, nov:double, dec:double);
+--dump d2000;
+d2001  =  LOAD  '/home/hduser/Downloads/2001.txt'  USING PigStorage(',')  AS  ( catid, name, jan:double, feb:double, mar:double, apr:double, may:double, jun:double, jul:double, aug:double, sep:double, oct:double, nov:double, dec:double);
+--dump d2001;
+d2002  =  LOAD  '/home/hduser/Downloads/2002.txt'  USING PigStorage(',')  AS  ( catid, name, jan:double, feb:double, mar:double, apr:double, may:double, jun:double, jul:double, aug:double, sep:double, oct:double, nov:double, dec:double);
+--dump d2002;
+dg2000 = foreach d2000 generate $0, $1, ($2+$3+$4+$5+$6+$7+$8+$9+$10+$11+$12+$13) as tot2000;
+--dump dg2000;
+dg2001 = foreach d2001 generate $0, $1, ($2+$3+$4+$5+$6+$7+$8+$9+$10+$11+$12+$13) as tot2001;
+--dump dg2001;
+dg2002 = foreach d2002 generate $0, $1, ($2+$3+$4+$5+$6+$7+$8+$9+$10+$11+$12+$13) as tot2002;
+--dump dg2002;
+data012 = join dg2000 by $0, dg2001 by $0, dg2002 by $0;
+--dump data012;
+data012new = foreach data012 generate $0, $1, $2, $5, $8;
+--dump data012new;
+total = foreach data012new generate $0, $1, ($2+$3+$4) as tot;
+--dump total;
+top5 = limit (order total by tot desc) 5;
+dump top5;
+--top5 = limit orderbytot 5;
+--dump top5;
+bottom5 = limit (order total by tot asc) 5;
+dump bottom5;
+--dump orderbytot1;
+--bottom5 = limit orderbytot1 5;
+ 

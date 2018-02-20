@@ -1,0 +1,23 @@
+d2000  =  LOAD  '/home/hduser/Downloads/2000.txt'  USING PigStorage(',')  AS  ( catid, name, jan:double, feb:double, mar:double, apr:double, may:double, jun:double, jul:double, aug:double, sep:double, oct:double, nov:double, dec:double);
+--dump d2000;
+d2001  =  LOAD  '/home/hduser/Downloads/2001.txt'  USING PigStorage(',')  AS  ( catid, name, jan:double, feb:double, mar:double, apr:double, may:double, jun:double, jul:double, aug:double, sep:double, oct:double, nov:double, dec:double);
+--dump d2001;
+d2002  =  LOAD  '/home/hduser/Downloads/2002.txt'  USING PigStorage(',')  AS  ( catid, name, jan:double, feb:double, mar:double, apr:double, may:double, jun:double, jul:double, aug:double, sep:double, oct:double, nov:double, dec:double);
+--dump d2002;
+dg2000 = foreach d2000 generate $0, $1, ($2+$3+$4+$5+$6+$7+$8+$9+$10+$11+$12+$13) as tot2000;
+--dump dg2000;
+dg2001 = foreach d2001 generate $0, $1, ($2+$3+$4+$5+$6+$7+$8+$9+$10+$11+$12+$13) as tot2001;
+--dump dg2001;
+dg2002 = foreach d2002 generate $0, $1, ($2+$3+$4+$5+$6+$7+$8+$9+$10+$11+$12+$13) as tot2002;
+--dump dg2002;
+data012 = join dg2000 by $0, dg2001 by $0, dg2002 by $0;
+--dump data012;
+data012new = foreach data012 generate $0, $1, $2, $5, $8;
+--dump data012new;
+growth1 = foreach data012new generate $0, $1, $2, $3, $4, (($3-$2)/$2*100), (($4-$3)/$3*100);
+--dump growth1;
+avgrowth = foreach growth1 generate $0, $1, $2, $3, $4, $5, $6, ROUND_TO((($5+$6)/2),2) as avg;
+--dump avgrowth;
+growth = filter avgrowth by avg<-5;
+dump growth;
+
